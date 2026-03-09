@@ -10,13 +10,12 @@ import UpdateProfileDialog from './UpdateProfileDialog'
 import { useSelector } from 'react-redux'
 import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
 
-// const skills = ["Html", "Css", "Javascript", "Reactjs"]
-const isResume = true;
+
 
 const Profile = () => {
     useGetAppliedJobs();
     const [open, setOpen] = useState(false);
-    const {user} = useSelector(store=>store.auth);
+    const { user } = useSelector(store => store.auth);
 
     return (
         <div>
@@ -55,7 +54,16 @@ const Profile = () => {
                 <div className='grid w-full max-w-sm items-center gap-1.5'>
                     <Label className="text-md font-bold">Resume</Label>
                     {
-                        isResume ? <a target='blank' href={user?.profile?.resume} className='text-blue-500 w-full hover:underline cursor-pointer'>{user?.profile?.resumeOriginalName}</a> : <span>NA</span>
+                        user?.profile?.resume
+                            ? <a
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href={user.profile.resume.replace('/image/upload/', '/raw/upload/')}
+                                className='text-blue-500 w-full hover:underline cursor-pointer'
+                            >
+                                {user?.profile?.resumeOriginalName}
+                            </a>
+                            : <span>NA</span>
                     }
                 </div>
             </div>
@@ -64,7 +72,7 @@ const Profile = () => {
                 {/* Applied Job Table   */}
                 <AppliedJobTable />
             </div>
-            <UpdateProfileDialog open={open} setOpen={setOpen}/>
+            <UpdateProfileDialog open={open} setOpen={setOpen} />
         </div>
     )
 }

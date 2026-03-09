@@ -9,7 +9,7 @@ import api from '@/api/axios'
 
 import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading } from '@/redux/authSlice'
+import { setLoading, setUser } from '@/redux/authSlice'
 import { Loader2, UserPlus, Mail, KeyRound, Phone, Upload } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PageTransition } from '../ui/page-transition'
@@ -51,11 +51,10 @@ const Signup = () => {
 
         try {
             dispatch(setLoading(true));
-            const res = await api.post(`/api/user/register`, formData, {
-                headers: { 'Content-Type': "multipart/form-data" },
-            });
+            const res = await api.post(`/api/user/register`, formData);
             if (res.data.success) {
-                navigate("/login");
+                dispatch(setUser(res.data.user));
+                navigate("/");
                 toast.success(res.data.message);
             }
         } catch (error) {

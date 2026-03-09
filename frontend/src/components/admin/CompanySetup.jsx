@@ -47,9 +47,7 @@ const CompanySetup = () => {
         try {
             setLoading(true);
             const res = await api.put(`/api/company/update/${params.id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
+                withCredentials: true,
             });
             if (res.data.success) {
                 toast.success(res.data.message);
@@ -57,7 +55,7 @@ const CompanySetup = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error?.response?.data?.message || "Something went wrong");
         } finally {
             setLoading(false);
         }
