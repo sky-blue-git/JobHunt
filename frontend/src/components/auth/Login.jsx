@@ -5,8 +5,8 @@ import { Input } from '../ui/input'
 import { RadioGroup } from '../ui/radio-group'
 import { Button } from '../ui/button'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { USER_API_END_POINT } from '@/utils/constant'
+import api from '@/api/axios'
+
 import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setUser } from '@/redux/authSlice'
@@ -23,7 +23,7 @@ const Login = () => {
         password: "",
         role: "",
     });
-    const { loading,user } = useSelector(store => store.auth);
+    const { loading, user } = useSelector(store => store.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -35,11 +35,10 @@ const Login = () => {
         e.preventDefault();
         try {
             dispatch(setLoading(true));
-            const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+            const res = await api.post(`/api/user/login`, input, {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                withCredentials: true,
             });
             if (res.data.success) {
                 dispatch(setUser(res.data.user));
@@ -53,31 +52,31 @@ const Login = () => {
             dispatch(setLoading(false));
         }
     }
-    useEffect(()=>{
-        if(user){
+    useEffect(() => {
+        if (user) {
             navigate("/");
         }
-    },[])
+    }, [])
     return (
         <PageTransition>
             <div className="min-h-screen bg-background">
                 <Navbar />
                 <div className="relative overflow-hidden">
-                    <BackgroundPattern 
-                        variant="diagonal" 
-                        className="absolute inset-0 opacity-10 z-0" 
+                    <BackgroundPattern
+                        variant="diagonal"
+                        className="absolute inset-0 opacity-10 z-0"
                     />
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                            <motion.div 
+                            <motion.div
                                 className="md:w-1/2 flex flex-col items-center md:items-start"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.5 }}
                             >
                                 <div className="w-64 h-64 mb-6">
-                                    <LottieAnimation 
-                                        animationData={authAnimation} 
+                                    <LottieAnimation
+                                        animationData={authAnimation}
                                         loop={true}
                                     />
                                 </div>
@@ -85,9 +84,9 @@ const Login = () => {
                                 <p className="text-muted-foreground text-center md:text-left mb-6">
                                     Sign in to access your account and continue your job search journey.
                                 </p>
-                                
+
                                 <div className="space-y-6 w-full max-w-md">
-                                    <motion.div 
+                                    <motion.div
                                         className="flex items-start space-x-4"
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -106,8 +105,8 @@ const Login = () => {
                                             <p className="text-sm text-muted-foreground">Access thousands of job listings tailored to your skills and experience.</p>
                                         </div>
                                     </motion.div>
-                                    
-                                    <motion.div 
+
+                                    <motion.div
                                         className="flex items-start space-x-4"
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -123,8 +122,8 @@ const Login = () => {
                                             <p className="text-sm text-muted-foreground">Apply to multiple positions with just a few clicks using your saved profile.</p>
                                         </div>
                                     </motion.div>
-                                    
-                                    <motion.div 
+
+                                    <motion.div
                                         className="flex items-start space-x-4"
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -144,8 +143,8 @@ const Login = () => {
                                     </motion.div>
                                 </div>
                             </motion.div>
-                            
-                            <motion.div 
+
+                            <motion.div
                                 className="md:w-1/2 w-full max-w-md"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -156,7 +155,7 @@ const Login = () => {
                                         <Lock className="mr-2 h-5 w-5 text-primary" />
                                         Login to Your Account
                                     </h2>
-                                    
+
                                     <form onSubmit={submitHandler}>
                                         <div className="space-y-4">
                                             <div>
@@ -228,12 +227,12 @@ const Login = () => {
                                         <div className="mt-6">
                                             {loading ? (
                                                 <Button className="w-full" disabled>
-                                                    <Loader2 className='mr-2 h-4 w-4 animate-spin' /> 
+                                                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                                                     Please wait
                                                 </Button>
                                             ) : (
-                                                <Button 
-                                                    type="submit" 
+                                                <Button
+                                                    type="submit"
                                                     className="w-full bg-primary hover:bg-primary/90"
                                                 >
                                                     Sign In
@@ -241,7 +240,7 @@ const Login = () => {
                                             )}
                                         </div>
                                     </form>
-                                    
+
                                     <div className="mt-6 text-center">
                                         <p className="text-sm text-muted-foreground">
                                             Don&apos;t have an account?{' '}

@@ -5,17 +5,17 @@ import { Badge } from './ui/badge'
 import { Bookmark } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatedCard } from './ui/animated-card'
-import axios from 'axios'
+import api from '@/api/axios'
 import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
-import { APPLICATION_API_END_POINT } from '@/utils/constant'
+
 import PropTypes from 'prop-types'
 
-const Job = ({job}) => {
+const Job = ({ job }) => {
     const navigate = useNavigate();
     const { user } = useSelector(store => store.auth);
     const [isApplied, setIsApplied] = useState(false);
-    
+
     // Check if user has already applied to this job
     useEffect(() => {
         if (job && user) {
@@ -26,9 +26,9 @@ const Job = ({job}) => {
     const applyJobHandler = async (e) => {
         e.stopPropagation(); // Prevent card click navigation
         try {
-            const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${job._id}`, {withCredentials: true});
-            
-            if(res.data.success){
+            const res = await api.get(`/api/application/apply/${job._id}`);
+
+            if (res.data.success) {
                 setIsApplied(true);
                 toast.success(res.data.message);
             }
@@ -42,9 +42,9 @@ const Job = ({job}) => {
         const createdAt = new Date(mongodbTime);
         const currentTime = new Date();
         const timeDifference = currentTime - createdAt;
-        return Math.floor(timeDifference/(1000*24*60*60));
+        return Math.floor(timeDifference / (1000 * 24 * 60 * 60));
     }
-    
+
     return (
         <AnimatedCard onClick={() => navigate(`/description/${job?._id}`)} className="cursor-pointer">
             <div className='flex items-center justify-between'>
@@ -74,8 +74,8 @@ const Job = ({job}) => {
                 <Badge className={'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 font-medium'} variant="outline">{job?.salary}LPA</Badge>
             </div>
             <div className='flex items-center gap-4 mt-4'>
-                <Button 
-                    onClick={applyJobHandler} 
+                <Button
+                    onClick={applyJobHandler}
                     className={`w-full ${isApplied ? 'bg-gray-600 cursor-not-allowed' : 'bg-primary hover:bg-primary/90'}`}
                     disabled={isApplied}
                 >

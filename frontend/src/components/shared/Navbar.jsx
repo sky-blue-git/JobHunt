@@ -5,8 +5,8 @@ import { Avatar, AvatarImage } from '../ui/avatar'
 import { LogOut, User2, Menu, X } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import axios from 'axios'
-import { USER_API_END_POINT } from '@/utils/constant'
+import api from '@/api/axios'
+
 import { setUser } from '@/redux/authSlice'
 import { toast } from 'sonner'
 import { ThemeToggle } from '../ThemeToggle'
@@ -19,7 +19,7 @@ const Navbar = () => {
 
     const logoutHandler = async () => {
         try {
-            const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
+            const res = await api.get(`/api/user/logout`);
             if (res.data.success) {
                 dispatch(setUser(null));
                 navigate("/");
@@ -64,49 +64,49 @@ const Navbar = () => {
                     <div className='flex items-center gap-3'>
                         <ThemeToggle />
                         {
-                        !user ? (
-                            <div className='flex items-center gap-2'>
-                                <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
-                                <Link to="/signup"><Button className="bg-primary hover:bg-primary/90" size="sm">Signup</Button></Link>
-                            </div>
-                        ) : (
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Avatar className="cursor-pointer h-8 w-8">
-                                        <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
-                                    </Avatar>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-80">
-                                    <div className=''>
-                                        <div className='flex gap-2 space-y-2'>
-                                            <Avatar className="cursor-pointer">
-                                                <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
-                                            </Avatar>
-                                            <div>
-                                                <h4 className='font-medium'>{user?.fullname}</h4>
-                                                <p className='text-sm text-muted-foreground'>{user?.profile?.bio}</p>
+                            !user ? (
+                                <div className='flex items-center gap-2'>
+                                    <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
+                                    <Link to="/signup"><Button className="bg-primary hover:bg-primary/90" size="sm">Signup</Button></Link>
+                                </div>
+                            ) : (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Avatar className="cursor-pointer h-8 w-8">
+                                            <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
+                                        </Avatar>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80">
+                                        <div className=''>
+                                            <div className='flex gap-2 space-y-2'>
+                                                <Avatar className="cursor-pointer">
+                                                    <AvatarImage src={user?.profile?.profilePhoto} alt="@shadcn" />
+                                                </Avatar>
+                                                <div>
+                                                    <h4 className='font-medium'>{user?.fullname}</h4>
+                                                    <p className='text-sm text-muted-foreground'>{user?.profile?.bio}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='flex flex-col my-2 text-gray-600'>
-                                            {
-                                                user && user.role === 'student' && (
-                                                    <div className='flex w-fit items-center gap-2 cursor-pointer'>
-                                                        <User2 />
-                                                        <Button variant="link"> <Link to="/profile">View Profile</Link></Button>
-                                                    </div>
-                                                )
-                                            }
+                                            <div className='flex flex-col my-2 text-gray-600'>
+                                                {
+                                                    user && user.role === 'student' && (
+                                                        <div className='flex w-fit items-center gap-2 cursor-pointer'>
+                                                            <User2 />
+                                                            <Button variant="link"> <Link to="/profile">View Profile</Link></Button>
+                                                        </div>
+                                                    )
+                                                }
 
-                                            <div className='flex w-fit items-center gap-2 cursor-pointer'>
-                                                <LogOut />
-                                                <Button onClick={logoutHandler} variant="link">Logout</Button>
+                                                <div className='flex w-fit items-center gap-2 cursor-pointer'>
+                                                    <LogOut />
+                                                    <Button onClick={logoutHandler} variant="link">Logout</Button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-                        )
-                    }
+                                    </PopoverContent>
+                                </Popover>
+                            )
+                        }
                     </div>
                 </div>
 
@@ -134,8 +134,8 @@ const Navbar = () => {
                                 user && user.role === 'recruiter' ? (
                                     <>
                                         <li>
-                                            <Link 
-                                                to="/admin/companies" 
+                                            <Link
+                                                to="/admin/companies"
                                                 className="block py-2 text-base font-medium hover:text-primary transition-colors"
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                             >
@@ -143,8 +143,8 @@ const Navbar = () => {
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link 
-                                                to="/admin/jobs" 
+                                            <Link
+                                                to="/admin/jobs"
                                                 className="block py-2 text-base font-medium hover:text-primary transition-colors"
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                             >
@@ -155,8 +155,8 @@ const Navbar = () => {
                                 ) : (
                                     <>
                                         <li>
-                                            <Link 
-                                                to="/" 
+                                            <Link
+                                                to="/"
                                                 className="block py-2 text-base font-medium hover:text-primary transition-colors"
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                             >
@@ -164,8 +164,8 @@ const Navbar = () => {
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link 
-                                                to="/jobs" 
+                                            <Link
+                                                to="/jobs"
                                                 className="block py-2 text-base font-medium hover:text-primary transition-colors"
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                             >
@@ -173,8 +173,8 @@ const Navbar = () => {
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link 
-                                                to="/browse" 
+                                            <Link
+                                                to="/browse"
                                                 className="block py-2 text-base font-medium hover:text-primary transition-colors"
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                             >
@@ -212,8 +212,8 @@ const Navbar = () => {
                                         <div className='space-y-2'>
                                             {
                                                 user && user.role === 'student' && (
-                                                    <Link 
-                                                        to="/profile" 
+                                                    <Link
+                                                        to="/profile"
                                                         className="flex items-center gap-2 p-2 hover:bg-muted rounded-lg transition-colors"
                                                         onClick={() => setIsMobileMenuOpen(false)}
                                                     >
@@ -222,7 +222,7 @@ const Navbar = () => {
                                                     </Link>
                                                 )
                                             }
-                                            <button 
+                                            <button
                                                 onClick={logoutHandler}
                                                 className="flex items-center gap-2 p-2 hover:bg-muted rounded-lg transition-colors w-full text-left"
                                             >
