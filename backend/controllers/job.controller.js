@@ -38,12 +38,34 @@ export const postJob = async (req, res) => {
 export const getAllJobs = async (req, res) => {
     try {
         const keyword = req.query.keyword || "";
-        const query = {
-            $or: [
-                { title: { $regex: keyword, $options: "i" } },
-                { description: { $regex: keyword, $options: "i" } },
-            ]
-        };
+
+        // Split the search query into individual words
+        const keywords = keyword.trim() ? keyword.split(/\s+/) : [""];
+
+        // Build an $and array where EACH word must be found in either title, description, or location
+        const andConditions = keywords.map(word => {
+            let regexStr = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+            // Flexibly match variations of industry keywords
+            if (regexStr.toLowerCase() === 'fullstack') {
+                regexStr = 'full\\s*stack';
+            } else if (regexStr.toLowerCase() === 'frontend') {
+                regexStr = 'front\\s*end';
+            } else if (regexStr.toLowerCase() === 'backend') {
+                regexStr = 'back\\s*end';
+            }
+
+            return {
+                $or: [
+                    { title: { $regex: regexStr, $options: "i" } },
+                    { description: { $regex: regexStr, $options: "i" } },
+                    { location: { $regex: regexStr, $options: "i" } }
+                ]
+            }
+        });
+
+        const query = keyword.trim() ? { $and: andConditions } : {};
+
         const jobs = await Job.find(query).populate({
             path: "company"
         }).sort({ createdAt: -1 });
