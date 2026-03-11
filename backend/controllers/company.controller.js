@@ -1,4 +1,6 @@
 import { Company } from "../models/company.model.js";
+import { Job } from "../models/job.model.js";
+
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 
@@ -101,5 +103,33 @@ export const updateCompany = async (req, res) => {
             message: "Internal server error.",
             success: false
         });
+    }
+}
+
+// recruiter can delete a company they registered
+export const deleteCompany = async (req, res) => {
+    try {
+        const companyId = req.params.id;
+        const userId = req.id;
+
+        const company = await Company.findById(companyId);
+        if (!company) {
+            return res.status(404).json({ message: "Company not found.", success: false });
+        }
+
+        // Only the recruiter who registered the company can delete it
+        if (company.userId.toString() !== userId) {
+            return res.status(403).json({ message: "You are not authorized to delete this company.", success: false });
+        }
+
+        // Cascade delete: remove all jobs belonging to this company
+        await Job.deleteMany({ company: companyId });
+
+        await Company.findByIdAndDelete(companyId);
+
+        return res.status(200).json({ message: "Company and all its jobs deleted successfully.", success: true });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error.", success: false });
     }
 }

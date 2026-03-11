@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
@@ -7,25 +6,24 @@ import { useNavigate } from "react-router-dom";
 import { AnimatedCard } from "./ui/animated-card";
 import api from "@/api/axios";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import { setAllAppliedJobs } from "@/redux/jobSlice";
 import PropTypes from "prop-types";
 
 const Job = ({ job }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((store) => store.auth);
-  const [isApplied, setIsApplied] = useState(false);
+  const { allAppliedJobs } = useSelector((store) => store.job);
 
-  // Check if user has already applied to this job
-  useEffect(() => {
-    if (job && user) {
-      setIsApplied(
-        job.applications?.some(
-          (application) => application.applicant === user?._id,
-        ),
-      );
-    }
-  }, [job, user]);
+  // Derive isApplied from allAppliedJobs in Redux.
+  // allAppliedJobs is fetched via useGetAppliedJobs and contains
+  // Application documents with a populated `job` field.
+  // This is the reliable source of truth regardless of which page we're on.
+  const isApplied =
+    allAppliedJobs?.some(
+      (application) => application.job?._id === job?._id
+    ) ?? false;
 
   const applyJobHandler = async (e) => {
     e.stopPropagation(); // Prevent card click navigation
@@ -33,7 +31,9 @@ const Job = ({ job }) => {
       const res = await api.get(`/api/application/apply/${job._id}`);
 
       if (res.data.success) {
-        setIsApplied(true);
+        // Optimistically add a new application entry to Redux so isApplied
+        // updates instantly without a full page reload.
+        dispatch(setAllAppliedJobs([...allAppliedJobs, { job: { _id: job._id } }]));
         toast.success(res.data.message);
       }
     } catch (error) {

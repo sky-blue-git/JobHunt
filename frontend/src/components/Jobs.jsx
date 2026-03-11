@@ -5,11 +5,13 @@ import Job from "./Job";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import useGetAllJobs from "@/hooks/useGetAllJobs";
+import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
 
 // const jobsArray = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const Jobs = () => {
-  useGetAllJobs(); // Add this hook to fetch all jobs
+  useGetAllJobs();
+  useGetAppliedJobs(); // Fetch user's applied jobs so Job cards can show correct state
   const { allJobs, searchedQuery } = useSelector((store) => store.job);
   const [filterJobs, setFilterJobs] = useState(allJobs);
 
